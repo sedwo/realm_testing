@@ -150,6 +150,7 @@ extension RootVC {
                         // Open our user realm db.
                         // persist it globally so that it remains connected to the server for syncing.
                         self?.userRealm = RLMCar.getDatabase()
+                        RLMCar.createOrUpdateAll(with: [car])
 
 //                        RLMCar.getDatabase { realm in
 //                            self?.userRealm = realm
