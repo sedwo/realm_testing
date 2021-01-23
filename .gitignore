@@ -67,17 +67,12 @@ fastlane/screenshots
 fastlane/test_output
 /Pods/
 /source/Pods/
-/source/SignAgent.xcworkspace
 
 report.xml
 source/fastlane/output
 README.md
-/docs/tiling/**/*.png
-/docs/tiling/**/*.zip
-/source/SignAgent.xcworkspace/xcuserdata/sedwo.xcuserdatad/UserInterfaceState.xcuserstate
 /source/xcuserdata/
 /source/Podfile.lock
 /.DS_Store
 .DS_Store
-/source/SignAgent.code/Helpers/.DS_Store
-/source/SignAgent.code/Supporting Files/Assets.xcassets/.DS_Store
+/source/tada.xcworkspace
