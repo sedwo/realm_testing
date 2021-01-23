@@ -1,0 +1,249 @@
+source 'https://github.com/CocoaPods/Specs.git'
+platform :ios, '14.0'
+
+use_frameworks!
+
+# ignore all warnings from all pods
+inhibit_all_warnings!
+
+# Swift migration support.
+# https://medium.com/@timefrancesco/swift-4-migration-and-cocoapods-31e5ac020980
+#
+post_install do |installer|
+    installer.pods_project.targets.each do |target|
+
+        target.build_configurations.each do |config|
+            config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf'
+            config.build_settings['SWIFT_VERSION'] = '5.0'  # default
+            config.build_settings['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = '$(inherited)'
+            config.build_settings['ONLY_ACTIVE_ARCH'] = 'YES'
+            config.build_settings.delete 'IPHONEOS_DEPLOYMENT_TARGET'
+        end
+    end
+end
+
+
+target 'tada' do
+  use_frameworks!
+
+  # A fast & simple, yet powerful & flexible logging framework for Mac and iOS
+  # https://github.com/CocoaLumberjack/CocoaLumberjack
+  pod 'CocoaLumberjack/Swift'
+
+  # A tool to enforce Swift style and conventions. https://realm.io
+  # https://github.com/realm/SwiftLint
+  # dev. tool.  (not mandatory, but nice to have for best practices)
+  # .swiftlint.yml file in root folder contains config parameters
+  pod 'SwiftLint'
+#  pod 'SwiftLint', '~> 0.38.2'
+
+  # To be also considered... 🤔  (future?)
+  # https://github.com/nicklockwood/SwiftFormat
+
+  # Realm is a mobile database: a replacement for Core Data & SQLite
+  # https://github.com/realm/realm-cocoa
+  pod 'RealmSwift'
+
+  # Wrapper for Apple's Reachability providing a reliable measure of whether Internet connectivity is available.
+  # (where Reachability alone can only indicate whether an interface is available that might allow a connection)
+  # https://github.com/rwbutler/Connectivity
+  pod "Connectivity"
+
+  # Network abstraction layer written in Swift.
+  # https://github.com/Moya/Moya
+  pod 'Moya'    # includes 'Alamofire'
+
+  # A clean and lightweight progress HUD based on SVProgressHUD, converted to Swift with the help of Swiftify.
+  # https://github.com/Swiftify-Corp/IHProgressHUD
+  #pod 'IHProgressHUD'
+  pod 'IHProgressHUD', :git => 'https://github.com/Swiftify-Corp/IHProgressHUD.git'
+
+  # A Swift Autolayout DSL for iOS & OS X
+  # https://github.com/SnapKit/SnapKit
+  pod 'SnapKit'
+
+  # Elegant iOS form builder
+  # https://github.com/xmartlabs/Eureka
+  pod 'Eureka'
+
+  # 'FloatLabelRow' is a Eureka custom row that shows a float label.
+  # Forked for modifications and updates.
+  # https://github.com/EurekaCommunity/FloatLabelRow
+#  pod 'FloatLabelRow', :git => 'https://github.com/sedwo/FloatLabelRow.git'
+  pod 'FloatLabelRow', :git => 'https://github.com/EurekaCommunity/FloatLabelRow.git'
+
+  # DeviceKit is a replacement of UIDevice.
+  # https://github.com/dennisweissmann/DeviceKit
+  pod 'DeviceKit'
+
+  # Network abstraction layer written in Swift.
+  # https://github.com/Moya/Moya
+  pod 'Moya'    # includes 'Alamofire'
+
+  # Simple Swift wrapper for Keychain that works on iOS, watchOS, tvOS and macOS.
+  # https://github.com/kishikawakatsumi/KeychainAccess
+  pod 'KeychainAccess'
+
+  # Use Apple FaceID or TouchID authentication in your app using BiometricAuthentication.
+  # https://github.com/rushisangani/BiometricAuthentication
+#  pod 'BiometricAuthentication'
+
+  # ViewRow is a Eureka row that allows you to display any UIView (or UIView sunclass) within a Eureka row.
+  # Views can be created in code or loaded from nib files.
+  # https://github.com/EurekaCommunity/ViewRow
+  #pod 'ViewRow', :git => 'https://github.com/EurekaCommunity/ViewRow'
+
+  # An easy way to implement pull-to-refresh feature based on UIScrollView extension, written in Swift 4.
+  # https://github.com/WXGBridgeQ/SwiftPullToRefresh
+  #  pod 'SwiftPullToRefresh'
+
+  # Use FontAwesome in your Swift projects
+  # https://github.com/thii/FontAwesome.swift
+#  pod 'FontAwesome.swift', '1.5.1'
+#  pod 'FontAwesome.swift'
+
+  # Effortless ZIP Handling in Swift
+  # https://github.com/weichsel/ZIPFoundation
+  pod 'ZIPFoundation'
+
+
+
+
+  ### PENDING CONSIDERATIONS
+
+  # A Swift binding framework
+  # https://github.com/DeclarativeHub/Bond
+  # pod 'Bond'
+
+  # Subclass of UITextField that adds an animated placeholder and an optional hint label below the text.
+  # https://github.com/raginmari/RAGTextField
+  # pod "RAGTextField"
+
+  # 📲 Automatically detects app updates and gently prompts users to upgrade.
+  # https://github.com/rwbutler/Updates
+  # pod "Updates"
+
+  # UIImage PDF extensions.
+  # https://github.com/DimaMishchenko/UIImagePlusPDF
+  # pod 'UIImagePlusPDF'
+
+  # Powerful and easy-to-use vector graphics Swift library with SVG support
+  # https://github.com/exyte/Macaw
+  # pod "Macaw"
+
+  # Access JSON properties dynamically like JavaScript using Swift 4.2's new @dynamicMemberLookup feature
+  # https://github.com/saoudrizwan/DynamicJSON
+  # pod 'DynamicJSON'
+
+  # a little native network debugging tool for iOS
+  # https://github.com/yagiz/Bagel
+
+  # Makes Internet connectivity detection more robust by detecting Wi-Fi networks without Internet access.
+  # https://github.com/rwbutler/Connectivity
+  # pod "Connectivity"
+
+
+# 🌲 Bonsai makes custom frame and transition animation to any view controller
+# https://github.com/rishi420/Bonsai
+# pod 'BonsaiController'
+
+#
+# META: - Shimmer
+#
+# A swift implementation of Facebooks shimmer effect.
+# https://github.com/BeauNouvelle/ShimmerSwift
+# pod 'ShimmerSwift'
+
+# Shimmer help you to add a shimmering effect to any view or table view in your app in very easy way.
+# https://github.com/Abedalkareem/AMShimmer
+# pod 'AMShimmer'
+
+# simple permission request with beautiful UI
+# https://github.com/IvanVorobei/RequestPermission
+#pod 'Sparrow/Modules/RequestPermission', :git => 'https://github.com/IvanVorobei/Sparrow.git'
+
+# <- FOR TESTING PURPOSES  ONLY ->
+# A small library to measure the frame rate of an iOS Application.
+# https://github.com/konoma/fps-counter
+#  pod 'FPSCounter'
+
+
+#
+# META: - Panels
+#
+
+# PanModal is an elegant and highly customizable presentation API for constructing bottom sheet modals on iOS.
+# https://github.com/slackhq/PanModal
+# pod 'PanModal'
+
+# Add slide panels to your viewcontroller without hassle
+# https://github.com/SCENEE/FloatingPanel
+# pod 'FloatingPanel'
+
+# Panels is a framework to easily add sliding panels to your application
+# https://github.com/antoniocasero/Panels
+# pod "Panels"
+
+# BottomPopup provides a popup-like presentation style to any view controller
+# https://github.com/ergunemr/BottomPopup
+# pod 'BottomPopup'
+
+# A library to imitate the iOS 10 Maps UI.
+# https://github.com/52inc/Pulley
+
+# iOS UI library to implement overlay based interfaces http://applidium.github.io/
+# https://github.com/applidium/ADOverlayContainer
+# pod 'OverlayContainer'
+
+
+# An iOS context menu UI inspired by Things 3.
+# https://github.com/GitHawkApp/ContextMenu
+# pod 'ContextMenu'
+
+#  pod 'IQKeyboardManagerSwift'
+
+# A Swift extension that adds toast notifications to the UIView object class.
+# https://github.com/scalessec/Toast-Swift
+# pod 'Toast-Swift'
+
+# 💧 Dropdown in Swift
+# https://github.com/hyperoslo/Dropdowns
+# pod 'Dropdowns'
+
+# 🚸 A child view controller framework that makes setting up your parent controllers as easy as pie.
+# https://github.com/zenangst/Family
+# pod 'Family'
+
+# A very flexible message bar for iOS written in Swift.
+# https://github.com/SwiftKickMobile/SwiftMessages
+# pod 'SwiftMessages'
+
+# A Swifty API for attributed strings
+# https://github.com/eddiekaiger/SwiftyAttributes
+# pod 'SwiftyAttributes'
+
+# - pod 'DZNEmptyDataSet'
+# - pod 'ChameleonFramework/Swift'
+
+# Awesome Dropdown menu for iOS with Swift 4
+# https://github.com/younatics/YNDropDownMenu
+
+
+
+# Tried and didn't quite work out.  👎 :(
+
+# Awesome autolayout Toolbar. Toolbar is a library for iOS. You can easily create chat InputBar.
+# https://github.com/sedwo/Toolbar
+#  pod 'Toolbar'
+#  pod 'Toolbar', :git => 'https://github.com/sedwo/Toolbar.git'
+
+# UITabBarController with swipe interaction between its tabs.
+# https://github.com/marcosgriselli/SwipeableTabBarController
+#  pod "SwipeableTabBarController"
+
+# An elegant, animated and customizable segmented control for iOS created by Tapptitude https://tapptitude.com
+# https://github.com/tapptitude/TTSegmentedControl
+# pod 'TTSegmentedControl'
+
+
+end
