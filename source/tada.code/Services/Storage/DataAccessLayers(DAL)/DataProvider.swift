@@ -6,7 +6,7 @@ import RealmSwift
 protocol DataProvider: DatabaseLayer {
 }
 
-
+/*
 extension DataProvider where Self: Object {
     // MARK: - Generic `model` specific operations
 
@@ -239,3 +239,4 @@ extension DataProvider where Self: Object {
 
 
 }
+*/

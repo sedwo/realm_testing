@@ -186,6 +186,9 @@
 		75D72704259828FC004F0E65 /* UIImage+Tint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D72700259828FC004F0E65 /* UIImage+Tint.swift */; };
 		75D72705259828FC004F0E65 /* UIImage+Tint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D72700259828FC004F0E65 /* UIImage+Tint.swift */; };
 		75D72706259828FC004F0E65 /* UIImage+Tint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D72700259828FC004F0E65 /* UIImage+Tint.swift */; };
+		75DC9E0C25C1A31C00B204D5 /* RLMUserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DC9E0B25C1A31C00B204D5 /* RLMUserProfile.swift */; };
+		75DC9E0D25C1A31C00B204D5 /* RLMUserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DC9E0B25C1A31C00B204D5 /* RLMUserProfile.swift */; };
+		75DC9E0E25C1A31C00B204D5 /* RLMUserProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DC9E0B25C1A31C00B204D5 /* RLMUserProfile.swift */; };
 		75DF495F238CC532001162E6 /* Servers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DF495E238CC532001162E6 /* Servers.swift */; };
 		75DF4960238CC532001162E6 /* Servers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DF495E238CC532001162E6 /* Servers.swift */; };
 		75DF4961238CC532001162E6 /* Servers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75DF495E238CC532001162E6 /* Servers.swift */; };
@@ -301,6 +304,7 @@
 		75D596B2217FBBC9007119B7 /* CGPoint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CGPoint.swift; sourceTree = "<group>"; };
 		75D726FF259828FC004F0E65 /* UIImageView+Tint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImageView+Tint.swift"; sourceTree = "<group>"; };
 		75D72700259828FC004F0E65 /* UIImage+Tint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIImage+Tint.swift"; sourceTree = "<group>"; };
+		75DC9E0B25C1A31C00B204D5 /* RLMUserProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RLMUserProfile.swift; sourceTree = "<group>"; };
 		75DF495E238CC532001162E6 /* Servers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Servers.swift; sourceTree = "<group>"; };
 		75DF9947201EC2900001518B /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		75DF9948201EC2900001518B /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -524,6 +528,7 @@
 			children = (
 				75511840224559AA00C460DD /* RLMDefaults.swift */,
 				75FDABC325BB60900025E0B7 /* RLMCar.swift */,
+				75DC9E0B25C1A31C00B204D5 /* RLMUserProfile.swift */,
 			);
 			path = RealmDB;
 			sourceTree = "<group>";
@@ -926,6 +931,7 @@
 				75D596B3217FBBC9007119B7 /* CGPoint.swift in Sources */,
 				75C4E24425981F9300B04E41 /* Closure.swift in Sources */,
 				751A2D652246627B001C91BF /* TestVC1.swift in Sources */,
+				75DC9E0C25C1A31C00B204D5 /* RLMUserProfile.swift in Sources */,
 				757215BE25BCBD1B00D732C8 /* DatabaseLayer.swift in Sources */,
 				75C4E26C25981FBD00B04E41 /* UserFeedbackRow.swift in Sources */,
 				75C8343820653F2A009EF285 /* UserService.swift in Sources */,
@@ -992,6 +998,7 @@
 			files = (
 				7510F80321AC831800C386A8 /* LocationManager.swift in Sources */,
 				75C4E26125981FBD00B04E41 /* ToggleTableViewCell.swift in Sources */,
+				75DC9E0D25C1A31C00B204D5 /* RLMUserProfile.swift in Sources */,
 				75C4E26A25981FBD00B04E41 /* UserFeedbackViewModel.swift in Sources */,
 				756DFB1320952A990004E9A3 /* AppDelegate.swift in Sources */,
 				751A2D662246627B001C91BF /* TestVC1.swift in Sources */,
@@ -1067,6 +1074,7 @@
 			files = (
 				7510F80421AC831800C386A8 /* LocationManager.swift in Sources */,
 				75C4E26225981FBD00B04E41 /* ToggleTableViewCell.swift in Sources */,
+				75DC9E0E25C1A31C00B204D5 /* RLMUserProfile.swift in Sources */,
 				75C4E26B25981FBD00B04E41 /* UserFeedbackViewModel.swift in Sources */,
 				756DFB1720952A9A0004E9A3 /* AppDelegate.swift in Sources */,
 				751A2D672246627B001C91BF /* TestVC1.swift in Sources */,

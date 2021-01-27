@@ -2,6 +2,7 @@ import CocoaLumberjack
 import Eureka
 //import RxEureka
 import FloatLabelRow
+import RealmSwift
 
 
 
@@ -32,14 +33,15 @@ class TestVC1: CommonFormViewController {
         initializeForm()
 
         navigationItem.title = "Test VC #1"
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "More", style: .plain, target: self, action: #selector(moreButton))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Sign out", style: .plain, target: self, action: #selector(signOut))
     }
 
-    @objc func moreButton() {
+    @objc func signOut() {
         DDLogDebug("")
 
-//        self.navigator.navigate(to: .VC4, with: .push)
+        app.currentUser?.logOut()
     }
+
 
 
     override func didReceiveMemoryWarning() {

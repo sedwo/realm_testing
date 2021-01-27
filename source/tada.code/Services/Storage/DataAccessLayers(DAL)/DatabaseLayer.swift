@@ -3,11 +3,8 @@ import RealmSwift
 
 
 
-// In generic protocols, to create something like <T> in generics, you need to add `associatedtype`.
-// https://www.bobthedeveloper.io/blog/generic-protocols-with-associated-type
-
 protocol DatabaseLayer {
-    associatedtype T: Object
+//    var realm: Realm { get set }
 }
 
 
@@ -15,7 +12,6 @@ struct DALconfig {
     static let DatabaseSchemaVersion: UInt64 = 1
     static let realmStoreName: String = "tada.realm"
     static let ISO8601dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZ"
-    static let defaultSyncToken: String = "00000000000000000000000000000000"
 }
 
 
@@ -28,92 +24,13 @@ extension DatabaseLayer where Self: Object {
      return fullURLpath
      }
      */
-    private static var realmConfig: Realm.Configuration {
-
-//        var userConfig = app.currentUser!.configuration(partitionValue: "user=\(app.currentUser!.id)", cancelAsyncOpenOnNonFatalErrors: true)
-        var userConfig = app.currentUser!.configuration(partitionValue: "user=\(app.currentUser!.id)")
-
-        userConfig.schemaVersion = DALconfig.DatabaseSchemaVersion
-
-        userConfig.migrationBlock = { migration, oldSchemaVersion in
-            // If we haven’t migrated anything yet, then `oldSchemaVersion` == 0
-            if oldSchemaVersion < DALconfig.DatabaseSchemaVersion {
-                // Realm will automatically detect new properties and removed properties,
-                // and will update the schema on disk automatically.
-                DDLogVerbose("⚠️  Migrating Realm DB: from v\(oldSchemaVersion) to v\(DALconfig.DatabaseSchemaVersion)  ⚠️")
-                /*
-                 if oldSchemaVersion < 2 {
-                 DDLogVerbose("⚠️ ++ \"oldSchemaVersion < 2\"  ⚠️")
-                 // Changes for v2:
-                 // ...
-                 DDLogVerbose("... ")
-                 migration.enumerateObjects(ofType: ...) { (_, type) in
-
-                 }
-                 }
-                 */
-            }
-        }
-
-//        userConfig.fileURL = userRealmFile
-
-        userConfig.shouldCompactOnLaunch = { (totalBytes: Int, usedBytes: Int) -> Bool in
-            let bcf = ByteCountFormatter()
-            bcf.allowedUnits = [.useMB] // optional: restricts the units to MB only
-            bcf.countStyle = .file
-            let totalBytesString = bcf.string(fromByteCount: Int64(totalBytes))
-            let usedBytesString = bcf.string(fromByteCount: Int64(usedBytes))
-
-            DDLogInfo("size_of_realm_file: \(totalBytesString), used_bytes: \(usedBytesString)")
-            let utilization = Double(usedBytes) / Double(totalBytes) * 100.0
-            DDLogInfo(String(format: "utilization: %.0f%%", utilization))
-
-            // totalBytes refers to the size of the file on disk in bytes (data + free space)
-            // usedBytes refers to the number of bytes used by data in the file
-
-            // Compact if the file is over 100mb in size and less than 60% 'used'
-            let filesizeMB = 100 * 1024 * 1024
-            let compactRealm: Bool = (totalBytes > filesizeMB) && (Double(usedBytes) / Double(totalBytes)) < 0.6
-
-            if compactRealm {
-                DDLogError("Compacting Realm database.")
-            }
-
-            return compactRealm
-        }
-
-        return userConfig
-    }
 
 
-    static func getDatabase() -> Realm? {
-        do {
-            return try Realm(configuration: realmConfig)
-        } catch let error {
-            DDLogError("Database error: \(error)")
-            fatalError("Database error: \(error)")
-        }
-    }
-
-
-    static func getDatabase(_ completion:@escaping (_ realm: Realm?) -> Void) {
-        // Open the realm asynchronously so that it downloads the remote copy before
-        // opening the local copy.
-        Realm.asyncOpen(configuration: realmConfig) { result in
-            switch result {
-            case .failure(let error):
-                DDLogError("Database error: \(error)")
-                fatalError("Database error: \(error)")
-            case .success(let userRealm):
-                completion(userRealm)
-            }
-        }
-    }
 
 
 
     // MARK: - Low-level CRUD
-
+/*
     func create() {
         autoreleasepool {
             do {
@@ -131,12 +48,12 @@ extension DatabaseLayer where Self: Object {
             }
         }
     }
-
-
+*/
+/*
     static func createOrUpdateAll(with objects: [Self], update: Bool = true) {
         autoreleasepool {
             do {
-                let database = self.getDatabase()
+                let database = realm
                 try database?.write {
                     database?.add(objects, update: update ? .all : .error)
                 }
@@ -164,7 +81,10 @@ extension DatabaseLayer where Self: Object {
 */
 
     }
+*/
 
+
+/*
     static func deleteAll(objects: [Self]) {
         autoreleasepool {
             do {
@@ -313,7 +233,7 @@ extension DatabaseLayer where Self: Object {
     static func forceRefresh() {
         getDatabase()?.refresh()
     }
-
+*/
 }
 
 

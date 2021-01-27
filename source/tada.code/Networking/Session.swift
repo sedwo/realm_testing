@@ -1,10 +1,30 @@
-struct Session {
-    var token: APIToken = APIToken()
-    var userProfile: UserProfile = UserProfile()
+import CocoaLumberjack
+import RealmSwift
 
 
-    func isSignedIn() -> Bool {
-        return token.isValid()
+
+final class Session {
+    var userProfile: UserProfile
+
+    // Global realms
+    var userRealm: Realm?
+
+
+    var isSignedIn: Bool {
+//        app.currentUser != nil && app.currentUser?.state == .loggedIn && userRealm != nil
+        app.currentUser != nil && app.currentUser?.state == .loggedIn
     }
+
+    // MARK: - Initializers(...)
+    init(userProfile: UserProfile = UserProfile()) {
+        DDLogInfo("")
+
+        self.userProfile = userProfile
+    }
+
+
+//    func copy(with zone: NSZone? = nil) -> Any {
+//    }
+
 
 }

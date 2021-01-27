@@ -5,7 +5,8 @@ import RealmSwift
 
 
 // initialize the app with your Realm app ID
-let app = App(id: "tada-wkgma")
+let app = RealmSwift.App(id: "tada-wkgma")
+
 
 
 // MARK: -
@@ -31,6 +32,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, IndicatorProtocol {
         window?.rootViewController = appNavigator.uinvc
         appNavigator.navigate(to: .LogoScreen)
         window?.makeKeyAndVisible()
+
+        // Show log all realm sync info in debug console.
+        #if DEBUG
+            app.syncManager.logLevel = .all
+        #endif
     }
 
 

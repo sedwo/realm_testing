@@ -1,4 +1,9 @@
+import CocoaLumberjack
+
+
+
 struct UserCredentials: Codable {
+
     let email: String
     let password: String
 
@@ -6,4 +11,6 @@ struct UserCredentials: Codable {
         self.email = email.lowercased()
         self.password = password
     }
+
+
 }

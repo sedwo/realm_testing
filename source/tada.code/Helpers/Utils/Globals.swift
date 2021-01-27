@@ -25,7 +25,7 @@ var appDelegate: AppDelegate {      // 'read-only' property
     return ._applicationDelegate
 }
 
-var appSession: Session {           // 'read-only' property
+var appSession: Session {
     return appDelegate._session
 }
 

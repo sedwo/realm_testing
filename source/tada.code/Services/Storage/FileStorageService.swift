@@ -50,9 +50,8 @@ struct FileStorageService {
 
 
     static var userAppDirectory: URL {
-        if appSession.isSignedIn() || appSession.token.isFake {
-            let currentUser = appSession.userProfile
-            return FileStorageService.appDirectory(for: currentUser)!
+        if appSession.isSignedIn {
+            return FileStorageService.appDirectory(for: appSession.userProfile)!
         } else if let lastUsername = appSettings.lastUsername { // Prevent fatal error when automaic logout
             let lastUser = UserProfile(userCredentials: UserCredentials(email: lastUsername, password: ""))
             return FileStorageService.appDirectory(for: lastUser)!

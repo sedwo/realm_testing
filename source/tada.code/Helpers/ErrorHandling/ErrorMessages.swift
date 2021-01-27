@@ -36,7 +36,7 @@ enum RealmError {
 enum AuthError {
     case emptyCredentials
     case expiredSession
-//    case InvalidCredentials
+    case InvalidCredentials
 //    case PermissionDenied
 //    case InvalidDevice
 //    case UserAccountInactive
@@ -64,6 +64,12 @@ enum AuthError {
             return AppError(title: "⚠️ User not found",
                             userInfo: "This user has not been registered on this device.\n\n"+Defaults.contactAdmin,
                             code: "userNotFound",
+                            type: self)
+
+        case .InvalidCredentials:
+            return AppError(title: "⚠️ Invalid Credentials",
+                            userInfo: "Invalid email or password.\n\n",
+                            code: "InvalidCredentials",
                             type: self)
         }
     }

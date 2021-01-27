@@ -1,4 +1,5 @@
 import Foundation
+import CocoaLumberjack
 import RealmSwift
 
 
@@ -20,5 +21,20 @@ class RLMDefaults: Object {
         self.init()
         self._partitionKey = partitionKey
     }
+
+
+//    convenience init(inRealm: Realm) {
+//        self.init()
+//
+//        if let syncConfiguration = inRealm.configuration.syncConfiguration,
+//           let partitionValue = syncConfiguration.partitionValue?.stringValue {
+//            self._partitionKey = partitionValue
+//        } else {
+//            DDLogError("Realm configuration error: not a syncing realm. 💥")
+//            fatalError("Realm configuration error: not a syncing realm. 💥")
+//       }
+//    }
+
+
 
 }

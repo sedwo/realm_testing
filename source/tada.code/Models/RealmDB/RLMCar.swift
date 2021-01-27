@@ -1,3 +1,4 @@
+
 import CocoaLumberjack
 import RealmSwift
 
@@ -11,6 +12,6 @@ class RLMCar: RLMDefaults {
 }
 
 
-extension RLMCar: DataProvider {
-    typealias T = RLMCar
-}
+//extension RLMCar: DataProvider {
+//}
+

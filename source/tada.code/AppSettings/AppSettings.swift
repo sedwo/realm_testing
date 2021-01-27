@@ -7,13 +7,11 @@ private let kServerURLkey = "serverURL"
 private let kUseBiometricAuthenticationKey = "useBiometricAuthentication"
 private let kRememberLastUsernameKey = "rememberLastUsername"
 private let kLastUsernameKey = "lastUsername"
+
 private let kUserLoginCountKey = "loginCount"
 private let kUserLastLoginDateKey = "lastLoginDate"
 private let kAppVersionKey = "appVersion"
 
-// <internal>
-private let kEnableSyncUpKey = "enableSyncUp"
-private let kEnableSyncDownKey = "enableSyncDown"
 
 
 // Singleton
@@ -130,32 +128,6 @@ class AppSettings {
         }
     }
 
-    var enableSyncUp: Bool {
-        get {
-            return userDefaults(for: appSession.userProfile).bool(forKey: kEnableSyncUpKey)
-        }
-        set (newValue) {
-            DDLogDebug("enable Sync Up: \(newValue)")
-
-            let defaults = userDefaults(for: appSession.userProfile)
-            defaults.set(newValue, forKey: kEnableSyncUpKey)
-            defaults.synchronize()
-        }
-    }
-
-
-    var enableSyncDown: Bool {
-        get {
-            return userDefaults(for: appSession.userProfile).bool(forKey: kEnableSyncDownKey)
-        }
-        set (newValue) {
-            DDLogDebug("enable Sync Down: \(newValue)")
-
-            let defaults = userDefaults(for: appSession.userProfile)
-            defaults.set(newValue, forKey: kEnableSyncDownKey)
-            defaults.synchronize()
-        }
-    }
 
     // MARK: -
     init() {
