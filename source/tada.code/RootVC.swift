@@ -125,20 +125,26 @@ extension RootVC {
 
             // sign-in
             app.login(credentials: appCredentials) { [weak self] (result) in
-                switch result {
-                case .failure(let error):
-                    DDLogError("Login failed: \(error)")
-                    self?.showErrorAlert(AuthError.InvalidCredentials.message)
+                // *IMPORTANT*
+                // Realm completion handlers are not necessarily called on the UI thread.
+                // This call to DispatchQueue.main.sync ensures that any changes to the UI,
+                // namely disabling any loading indicator and navigating to the next page,
+                // are handled on the UI thread.
+                DispatchQueue.main.async {
+                    switch result {
+                    case .failure(let error):
+                        DDLogError("Login failed: \(error)")
+                        self?.showErrorAlert(AuthError.InvalidCredentials.message)
 
-                case .success(let user):    // RLMUser
-                    DDLogVerbose("Login succeeded for: \(user.id)")
+                    case .success(let user):    // RLMUser
+                        DDLogVerbose("Login succeeded for: \(user.id)")
 
-                    self?.onSignIn(user)
+                        self?.onSignIn(user)
 
-//                    self?.navigator.testVC1()
+                        self?.navigator.testVC1()
+                    }
                 }
             }
-
         }
 
 
@@ -157,6 +163,7 @@ extension RootVC {
         let userRealm = Realm.open(withConfig: realmConfiguration)
 //        let userRealm = Realm.open(withConfig: config)
 
+
         appSession.userRealm = userRealm
 //        self.myRealm = userRealm
 
@@ -167,16 +174,7 @@ extension RootVC {
 //        self.userRealm = userRealm
 
 
-        let car = RLMCar(partitionKey: "user=\(user.id)")
-//        let car = RLMCar(partitionKey: "user=\(appSession.userProfile.email)")
-        car.brand = "Tesla Roadster"
-        car.colour = "Black"
 
-        userRealm?.createOrUpdateAll(with: [car])
-        appSession.userRealm?.createOrUpdateAll(with: [car])
-
-
-/*
         appSettings.userLoginCount += 1
         if appSettings.isFirstLogin() {
             /// First time, fresh install, new user, etc.  Set any defaults.
@@ -205,7 +203,7 @@ extension RootVC {
 
         // done.
         appSettings.appVersion = Bundle.main.versionNumber
-*/
+
     }
 
 
@@ -220,6 +218,24 @@ extension RootVC {
 extension Realm {
 
     func createOrUpdateAll(with objects: [Object], update: Bool = true) {
+
+        // Validate `partitionKey == partitionValue` for this realm.
+        let objectPartitionKey = objects.first?.value(forKeyPath: "_partitionKey") as! String
+        var realmPartitionValue: String
+
+        if let syncConfiguration = self.configuration.syncConfiguration,
+           let partitionValue = syncConfiguration.partitionValue?.stringValue {
+            realmPartitionValue = partitionValue
+        } else {
+            DDLogError("Realm configuration error: not a syncing realm. 💥")
+            fatalError("Realm configuration error: not a syncing realm. 💥")
+       }
+
+        if objectPartitionKey != realmPartitionValue {
+            DDLogError("partitionKey ≠ partitionValue 💥")
+            fatalError("partitionKey ≠ partitionValue 💥")
+        }
+
         autoreleasepool {
             do {
                 try self.write {

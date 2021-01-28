@@ -84,15 +84,29 @@ extension TestVC1 {
 
         form +++ Section(header: "", footer: "") { section in
             }
-/*
+
             <<< ButtonRow() { row in
                 row.title = "button1"
                 }.onCellSelection { [unowned self] cell, row in
                     DDLogVerbose("Selected \(row.title!)")
+
+//                    DispatchQueue.main.async {
+                    let car = RLMCar(partitionKey: "user=\(app.currentUser!.id)")
+//                    let car = RLMCar(partitionKey: "user=\(appSession.userProfile.email)")
+                    car.brand = "Tesla SUV"
+                    car.colour = "Cyan"
+
+                    appSession.userRealm?.createOrUpdateAll(with: [car])
+
+
+
 //                    self.navigator.navigate(to: .VC2, with: .modalWithNavigationBar)
 //                    self.navigator.navigate(to: .VC2, with: .modal)
+
+
+//                    }
                 }
-*/
+
 
 
 //        self.tableView.backgroundColor = UIColor.blue
