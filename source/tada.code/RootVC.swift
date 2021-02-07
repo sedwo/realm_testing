@@ -10,7 +10,7 @@ class RootVC: UIViewController, IndicatorProtocol {
     private var navigator: AppNavigator!
     private var imageView: UIImageView!
 
-    var myRealm: Realm?
+//    var myRealm: Realm?
 
 
     // MARK: -
@@ -68,7 +68,9 @@ class RootVC: UIViewController, IndicatorProtocol {
         let testButton = UIBarButtonItem(title: "Sign in", style: .plain, target: self, action: #selector(signIn))
         navigationItem.rightBarButtonItem = testButton
 
-        _ = app.currentUser?.logOut()
+        if let user = realmApp.currentUser {
+            _ = user.logOut()
+        }
     }
 
 
@@ -107,7 +109,7 @@ extension RootVC {
         DDLogInfo("")
 
         if appSession.isSignedIn {
-            DDLogVerbose("isSignedIn: user = \(app.currentUser!.id)")
+            DDLogVerbose("isSignedIn: user = \(realmApp.currentUser!.id)")
             navigator.testVC1()
         } else {
 
@@ -124,13 +126,12 @@ extension RootVC {
             let appCredentials = Credentials.emailPassword(email: userCredentials.email, password: userCredentials.password)
 
             // sign-in
-            app.login(credentials: appCredentials) { [weak self] (result) in
+            realmApp.login(credentials: appCredentials) { [weak self] (result) in
                 // *IMPORTANT*
                 // Realm completion handlers are not necessarily called on the UI thread.
                 // This call to DispatchQueue.main.sync ensures that any changes to the UI,
                 // namely disabling any loading indicator and navigating to the next page,
                 // are handled on the UI thread.
-                DispatchQueue.main.async {
                     switch result {
                     case .failure(let error):
                         DDLogError("Login failed: \(error)")
@@ -138,11 +139,24 @@ extension RootVC {
 
                     case .success(let user):    // RLMUser
                         DDLogVerbose("Login succeeded for: \(user.id)")
+/*
+                        // Background thread.
+                        let config = app.currentUser!.configuration(partitionValue: "user=\(user.id)")
+                        let realmConfiguration = Realm.setup(config: config) // update with other params.
+                        let userRealm = Realm.open(withConfig: realmConfiguration)
+                        self?.myRealm = userRealm
+*/
 
-                        self?.onSignIn(user)
+                        DispatchQueue.main.async {
+                            // main thread.
+                            self?.onSignIn(user)
+//                            appSession.userRealm?.syncSession?.resume()
+//                            realmApp.syncManager.
+//                            appSession.userRealm?.syncSession.
 
-                        self?.navigator.testVC1()
-                    }
+
+                            self?.navigator.testVC1()
+                        }
                 }
             }
         }
@@ -157,14 +171,23 @@ extension RootVC {
 
         // Setup, open, and persist a realm db during this session.
 //        let config = app.currentUser!.configuration(partitionValue: "user=\(appSession.userProfile.email)")
-        let config = app.currentUser!.configuration(partitionValue: "user=\(user.id)")
+//        let config = realmApp.currentUser!.configuration(partitionValue: Partition.user)
 
-        let realmConfiguration = Realm.setup(config: config) // update with other params.
-        let userRealm = Realm.open(withConfig: realmConfiguration)
+//        let realmConfiguration = Realm.setup(config: config) // update with other params.
+//        let userRealm = Realm.open(withConfig: realmConfiguration)
 //        let userRealm = Realm.open(withConfig: config)
 
+        // *NOTE*: Persist realm(s) during an open session to allow them to sync.
+        appSession.userRealm = RLMDefaults.openRealm()
 
-        appSession.userRealm = userRealm
+//        if let realm = appSession.userRealm,
+//           let syncConfiguration = realm.configuration.syncConfiguration,
+//           let partitionValue = syncConfiguration.partitionValue?.stringValue {
+//            realmPartitionValue = partitionValue
+
+
+        // *NOTE*: Persist realm(s) during an open session to allow them to sync.
+//        appSession.userRealm = userRealm
 //        self.myRealm = userRealm
 
 
@@ -174,7 +197,7 @@ extension RootVC {
 //        self.userRealm = userRealm
 
 
-
+/*
         appSettings.userLoginCount += 1
         if appSettings.isFirstLogin() {
             /// First time, fresh install, new user, etc.  Set any defaults.
@@ -203,24 +226,21 @@ extension RootVC {
 
         // done.
         appSettings.appVersion = Bundle.main.versionNumber
-
+*/
     }
-
-
-
 
 
 }
 
 
 
-
+/*
 extension Realm {
 
     func createOrUpdateAll(with objects: [Object], update: Bool = true) {
-
+/*
         // Validate `partitionKey == partitionValue` for this realm.
-        let objectPartitionKey = objects.first?.value(forKeyPath: "_partitionKey") as! String
+        let objectPartitionKey = objects.first?.value(forKeyPath: "_partition") as! String
         var realmPartitionValue: String
 
         if let syncConfiguration = self.configuration.syncConfiguration,
@@ -235,10 +255,10 @@ extension Realm {
             DDLogError("partitionKey ≠ partitionValue 💥")
             fatalError("partitionKey ≠ partitionValue 💥")
         }
-
+*/
         autoreleasepool {
             do {
-                try self.write {
+                try self.safeWrite {
                     self.add(objects, update: update ? .all : .error)
                 }
             } catch let error {
@@ -251,38 +271,10 @@ extension Realm {
     }
 
 
-
-
-
-
-
-
     static func setup(config: Realm.Configuration) -> Realm.Configuration {
         var realmConfig = config
 
 //        realmConfig.fileURL = userRealmFile
-
-        realmConfig.schemaVersion = DALconfig.DatabaseSchemaVersion
-
-        realmConfig.migrationBlock = { migration, oldSchemaVersion in
-            // If we haven’t migrated anything yet, then `oldSchemaVersion` == 0
-            if oldSchemaVersion < DALconfig.DatabaseSchemaVersion {
-                // Realm will automatically detect new properties and removed properties,
-                // and will update the schema on disk automatically.
-                DDLogVerbose("⚠️  Migrating Realm DB: from v\(oldSchemaVersion) to v\(DALconfig.DatabaseSchemaVersion)  ⚠️")
-                /*
-                 if oldSchemaVersion < 2 {
-                 DDLogVerbose("⚠️ ++ \"oldSchemaVersion < 2\"  ⚠️")
-                 // Changes for v2:
-                 // ...
-                 DDLogVerbose("... ")
-                 migration.enumerateObjects(ofType: ...) { (_, type) in
-
-                 }
-                 }
-                 */
-            }
-        }
 
         realmConfig.shouldCompactOnLaunch = { (totalBytes: Int, usedBytes: Int) -> Bool in
             let bcf = ByteCountFormatter()
@@ -320,7 +312,7 @@ extension Realm {
             if let c = withConfig {
                 config = c
             } else {  // default
-                let userConfig = app.currentUser!.configuration(partitionValue: "user=\(appSession.userProfile.email)")
+                let userConfig = realmApp.currentUser!.configuration(partitionValue: "user=\(appSession.userProfile.email)")
                 config = Self.setup(config: userConfig)
             }
 
@@ -339,7 +331,7 @@ extension Realm {
         if let c = withConfig {
             config = c
         } else {  // default
-            let userConfig = app.currentUser!.configuration(partitionValue: "user=\(appSession.userProfile.email)")
+            let userConfig = realmApp.currentUser!.configuration(partitionValue: "user=\(appSession.userProfile.email)")
             config = Self.setup(config: userConfig)
         }
 
@@ -357,3 +349,4 @@ extension Realm {
 
 
 }
+*/

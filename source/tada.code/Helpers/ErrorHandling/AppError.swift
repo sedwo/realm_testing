@@ -24,10 +24,23 @@ extension AppError: LocalizedError {
 
 extension Error {
     var errorTitle: String {
+        if type(of: self) == NSError.self {
+            return (self as NSError).domain
+        }
+
         return (self as! AppError).title
     }
 
     var errorCode: String {
+        if type(of: self) == NSError.self {
+            let userInfo = (self as NSError).userInfo
+            if let statusCode = userInfo["statusCode"] as? NSNumber {
+                return statusCode.stringValue
+            } else {
+                return "unknown"
+            }
+        }
+
         return (self as! AppError).code
     }
 

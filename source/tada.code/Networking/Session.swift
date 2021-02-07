@@ -12,7 +12,7 @@ final class Session {
 
     var isSignedIn: Bool {
 //        app.currentUser != nil && app.currentUser?.state == .loggedIn && userRealm != nil
-        app.currentUser != nil && app.currentUser?.state == .loggedIn
+        realmApp.currentUser != nil && realmApp.currentUser?.state == .loggedIn
     }
 
     // MARK: - Initializers(...)

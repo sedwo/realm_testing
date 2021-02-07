@@ -10,6 +10,10 @@ class TestVC1: CommonFormViewController {
 
     private var navigator: AppNavigator!
 
+    var uploadToken: SyncSession.ProgressNotificationToken?
+
+
+
     // MARK: - Initializers(...)
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -34,12 +38,30 @@ class TestVC1: CommonFormViewController {
 
         navigationItem.title = "Test VC #1"
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Sign out", style: .plain, target: self, action: #selector(signOut))
+
+
+        if let syncSession = appSession.userRealm?.syncSession {
+            uploadToken = syncSession.addProgressNotification(for: .upload,
+                                                              mode: .reportIndefinitely) { progress in
+
+                DDLogVerbose("sync progress (.upload): \(progress.fractionTransferred*100.0)")
+
+//                if progress.isTransferComplete {
+//                    self.uploadToken?.invalidate()
+//                }
+
+            }
+        } else {
+            DDLogError("⚠️ invalid syncSession")
+        }
+
+
     }
 
     @objc func signOut() {
         DDLogDebug("")
 
-        app.currentUser?.logOut()
+        _ = realmApp.currentUser?.logOut()
     }
 
 
@@ -64,7 +86,7 @@ extension TestVC1 {
         // MARK: - email section
         form +++ Section(header: "", footer: "") { section in
             }
-
+/*
             <<< TextFloatLabelRow() { row in
                 row.title = "ABC"
                 row.value = "123"
@@ -81,7 +103,7 @@ extension TestVC1 {
                 }.onCellSelection { cell, row in
                     DDLogVerbose("Selected \(row.title!)")
         }
-
+*/
         form +++ Section(header: "", footer: "") { section in
             }
 
@@ -90,15 +112,35 @@ extension TestVC1 {
                 }.onCellSelection { [unowned self] cell, row in
                     DDLogVerbose("Selected \(row.title!)")
 
+
+//                    let car = RLMCar()
+//                    car.brand = "Honda"
+//                    car.colour = "Blue"
+//
+//                    appSession.userRealm?.createOrUpdateAll(with: [car])
+
+
+
+                    let car = RLMCar()
+                    car.brand = "Datsun"
+                    car.colour = "Neon"
+
+                    RLMCar.createOrUpdateAll(with: [car])
+
+
+                    DispatchQueue.global(qos: .userInitiated).async { // separate thread...
+
 //                    DispatchQueue.main.async {
-                    let car = RLMCar(partitionKey: "user=\(app.currentUser!.id)")
-//                    let car = RLMCar(partitionKey: "user=\(appSession.userProfile.email)")
-                    car.brand = "Tesla SUV"
-                    car.colour = "Cyan"
+//                    let car = RLMCar()
+//                    let car = RLMCar(partitionKey: Partition.user)
+//                    car.brand = "Datsun"
+//                    car.colour = "Neon"
+//
+//                    RLMCar.createOrUpdateAll(with: [car])
 
-                    appSession.userRealm?.createOrUpdateAll(with: [car])
+                    RLMCar.findAll()
 
-
+                    }
 
 //                    self.navigator.navigate(to: .VC2, with: .modalWithNavigationBar)
 //                    self.navigator.navigate(to: .VC2, with: .modal)
@@ -107,6 +149,13 @@ extension TestVC1 {
 //                    }
                 }
 
+
+            <<< ButtonRow() { row in
+                row.title = "sync now"
+            }.onCellSelection { [unowned self] cell, row in
+                DDLogVerbose("Selected \(row.title!)")
+                appSession.userRealm?.syncSession?.resume()
+            }
 
 
 //        self.tableView.backgroundColor = UIColor.blue

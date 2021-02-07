@@ -4,11 +4,6 @@ import RealmSwift
 
 
 
-// initialize the app with your Realm app ID
-let app = RealmSwift.App(id: "tada-wkgma")
-
-
-
 // MARK: -
 class SceneDelegate: UIResponder, UIWindowSceneDelegate, IndicatorProtocol {
 
@@ -35,8 +30,37 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, IndicatorProtocol {
 
         // Show log all realm sync info in debug console.
         #if DEBUG
-            app.syncManager.logLevel = .all
+            realmApp.syncManager.logLevel = .error
         #endif
+
+        // It is *strongly recommended* to set an error handler on the SyncManager singleton.
+        // https://docs.realm.io/sync/using-synced-realms/errors
+        realmApp.syncManager.errorHandler = { [weak self] error, session in
+            DDLogError("SyncManager error: \(error)")
+            DDLogError("SyncManager session: \(session.debugDescription)")
+
+            let syncError = error as! SyncError
+
+            switch syncError.code {
+            case .clientResetError:
+                DDLogError("SyncManager error: ⚠️ .clientResetError")
+//                if let (path, clientResetToken) = syncError.clientResetInfo() {
+//                    closeRealmSafely()
+//                    saveBackupRealmPath(path)
+//                    SyncSession.immediatelyHandleError(clientResetToken)
+//                }
+            default:
+                // Handle other errors...
+                ()
+            }
+
+            let appError = AppError(title: "Sync Error",
+                                    userInfo: "\(error.localizedDescription)\n(status code: \(error.errorCode))",
+                                    code: error.errorCode, type: RealmError.self)
+
+            self?.showErrorAlert(appError)
+        }
+
     }
 
 

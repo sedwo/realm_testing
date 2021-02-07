@@ -3,17 +3,33 @@ import RealmSwift
 
 
 
+let realmApp = RealmSwift.App(id: "tada-wkgma")
+
+enum Partition: String, CaseIterable {
+    case user
+    case `default`
+
+    var description: String {
+        if let currentUser = realmApp.currentUser {
+            switch self {
+            case .user,
+                 .default:
+                return "user=\(currentUser.id)"
+            }
+        } else {
+            DDLogError("Realm configuration error: invalid current user. 💥")
+            fatalError("Realm configuration error: invalid current user. 💥")
+        }
+    }
+
+    // Default MongoDB Realm partition key string name.
+    static let key = "_partition"
+}
+
+
+
 protocol DatabaseLayer {
-//    var realm: Realm { get set }
 }
-
-
-struct DALconfig {
-    static let DatabaseSchemaVersion: UInt64 = 1
-    static let realmStoreName: String = "tada.realm"
-    static let ISO8601dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZ"
-}
-
 
 extension DatabaseLayer where Self: Object {
 
@@ -25,7 +41,96 @@ extension DatabaseLayer where Self: Object {
      }
      */
 
+    private static func setup(config: Realm.Configuration) -> Realm.Configuration {
+        var realmConfig = config
 
+//        realmConfig.fileURL = userRealmFile
+
+/*
+        // synced Realms don’t support migration blocks
+        // https://docs.realm.io/sync/using-synced-realms/syncing-data
+        realmConfig.schemaVersion = DALconfig.DatabaseSchemaVersion
+
+        realmConfig.migrationBlock = { migration, oldSchemaVersion in
+            // If we haven’t migrated anything yet, then `oldSchemaVersion` == 0
+            if oldSchemaVersion < DALconfig.DatabaseSchemaVersion {
+                // Realm will automatically detect new properties and removed properties,
+                // and will update the schema on disk automatically.
+                DDLogVerbose("⚠️  Migrating Realm DB: from v\(oldSchemaVersion) to v\(DALconfig.DatabaseSchemaVersion)  ⚠️")
+                /*
+                 if oldSchemaVersion < 2 {
+                 DDLogVerbose("⚠️ ++ \"oldSchemaVersion < 2\"  ⚠️")
+                 // Changes for v2:
+                 // ...
+                 DDLogVerbose("... ")
+                 migration.enumerateObjects(ofType: ...) { (_, type) in
+
+                 }
+                 }
+                 */
+            }
+        }
+*/
+        realmConfig.shouldCompactOnLaunch = { (totalBytes: Int, usedBytes: Int) -> Bool in
+            let bcf = ByteCountFormatter()
+            bcf.allowedUnits = [.useMB] // optional: restricts the units to MB only
+            bcf.countStyle = .file
+            let totalBytesString = bcf.string(fromByteCount: Int64(totalBytes))
+            let usedBytesString = bcf.string(fromByteCount: Int64(usedBytes))
+
+            DDLogInfo("size_of_realm_file: \(totalBytesString), used_bytes: \(usedBytesString)")
+            let utilization = Double(usedBytes) / Double(totalBytes) * 100.0
+            DDLogInfo(String(format: "utilization: %.0f%%", utilization))
+
+            // totalBytes refers to the size of the file on disk in bytes (data + free space)
+            // usedBytes refers to the number of bytes used by data in the file
+
+            // Compact if the file is over 100mb in size and less than 60% 'used'
+            let filesizeMB = 100 * 1024 * 1024
+            let compactRealm: Bool = (totalBytes > filesizeMB) && (Double(usedBytes) / Double(totalBytes)) < 0.6
+
+            if compactRealm {
+                DDLogError("⚠️ Compacting Realm database...")
+            }
+
+            return compactRealm
+        }
+
+        return realmConfig
+    }
+
+
+
+    static func openRealm(partition: String? = Partition.default.description) -> Realm? {
+        guard let partitionValue = partition else {
+            DDLogError("Realm configuration error: invalid partition value. 💥")
+            fatalError("Realm configuration error: invalid partition value. 💥")
+        }
+
+        let config = realmApp.currentUser!.configuration(partitionValue: partitionValue)
+        let realmConfiguration = setup(config: config) // update with other params.
+
+        do {
+            return try Realm(configuration: realmConfiguration)
+        } catch let error {
+            DDLogError("Database error: \(error)")
+            fatalError("Database error: \(error)")
+        }
+    }
+
+
+//    static func getDatabase(_ completion:@escaping (_ realm: Realm?) -> Void) {
+//        // Open the realm asynchronously so that it downloads the remote copy before opening the local copy.
+//        Realm.asyncOpen(configuration: realmConfig) { result in
+//            switch result {
+//            case .failure(let error):
+//                DDLogError("Database error: \(error)")
+//                fatalError("Database error: \(error)")
+//            case .success(let userRealm):
+//                completion(userRealm)
+//            }
+//        }
+//    }
 
 
 
@@ -49,11 +154,18 @@ extension DatabaseLayer where Self: Object {
         }
     }
 */
-/*
+
     static func createOrUpdateAll(with objects: [Self], update: Bool = true) {
+        if objects.isEmpty {
+            DDLogError("⚠️ 0 objects")
+            return
+        }
+
+        let objectPartitionValue = objects.first?.value(forKeyPath: Partition.key) as! String
+
         autoreleasepool {
             do {
-                let database = realm
+                let database = self.openRealm(partition: objectPartitionValue)
                 try database?.write {
                     database?.add(objects, update: update ? .all : .error)
                 }
@@ -62,26 +174,17 @@ extension DatabaseLayer where Self: Object {
                 fatalError("Database error: \(error)")
             }
         }
-/*
-        for (index, object) in objects.enumerated() {
-            DDLogDebug("object[\(index)]")
-
-            autoreleasepool {
-                do {
-                    let database = self.getDatabase()
-                    try database?.write {
-                        database?.add(object, update: update ? .all : .error)
-                    }
-                } catch let error {
-                    DDLogError("Database error: \(error)")
-                    fatalError("Database error: \(error)")
-                }
-            }
-        }
-*/
 
     }
-*/
+
+
+    static func findAll(inPartition: String? = Partition.default.description) -> [Self] {
+        if let database = self.openRealm(partition: inPartition) {
+            return database.objects(Self.self).map { $0 }
+        } else {
+            return []
+        }
+    }
 
 
 /*
@@ -121,13 +224,6 @@ extension DatabaseLayer where Self: Object {
     }
 
 
-    static func findAll() -> [Self] {
-        if let database = self.getDatabase() {
-            return database.objects(Self.self).map { $0 }
-        } else {
-            return []
-        }
-    }
 
 
     static func findAll(sortedBy key: String) -> [Self] {

@@ -4,10 +4,10 @@ import RealmSwift
 
 
 
-class RLMDefaults: Object {
+class RLMDefaults: Object, DataProvider {
 
     @objc dynamic var _id: String = newUUID
-    @objc dynamic var _partitionKey: String = ""
+    @objc dynamic var _partition: String = Partition.default.description
 
     @objc dynamic var serverLastUpdated: String? = nil
     @objc dynamic var clientLastUpdated: String? = nil
@@ -17,10 +17,13 @@ class RLMDefaults: Object {
         return "_id"
     }
 
+
+
     convenience init(partitionKey: String) {
         self.init()
-        self._partitionKey = partitionKey
+        self._partition = partitionKey
     }
+
 
 
 //    convenience init(inRealm: Realm) {
@@ -28,7 +31,7 @@ class RLMDefaults: Object {
 //
 //        if let syncConfiguration = inRealm.configuration.syncConfiguration,
 //           let partitionValue = syncConfiguration.partitionValue?.stringValue {
-//            self._partitionKey = partitionValue
+//            self._partition = partitionValue
 //        } else {
 //            DDLogError("Realm configuration error: not a syncing realm. 💥")
 //            fatalError("Realm configuration error: not a syncing realm. 💥")

@@ -191,6 +191,8 @@ extension DataProvider where Self: Object {
 
     // sorted by "******LastUpdated"
     static func sortObjectsByLastUpdated<T: RLMDefaults>(order: ComparisonResult = .orderedDescending, _ objects: [T]) -> [T] {
+        let ISO8601dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZZZ"
+
         if objects.isEmpty {
             return []
         }
@@ -198,7 +200,7 @@ extension DataProvider where Self: Object {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.timeZone = TimeZone.autoupdatingCurrent
-        formatter.dateFormat = DALconfig.ISO8601dateFormat
+        formatter.dateFormat = ISO8601dateFormat
 
         let sortedObjects = objects.sorted(by: {
             // Convert ISO8601 date string format to Date() object.
